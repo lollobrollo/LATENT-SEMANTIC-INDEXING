@@ -11,16 +11,14 @@ At its core, LSI works by:
 2. Applying Singular Value Decomposition (SVD) to this matrix. SVD reduces the high-dimensional term space into a lower-dimensional semantic space, where similar words and documents are grouped closer together based on their usage patterns—not just their exact terms.
 3. Mapping both documents and queries into this semantic space, allowing the system to find relevant results even when the query and the documents don’t share exact keywords.
 
-Our work is divided in various part. In particular we defined 8 files:
+Our work is divided in various part. In particular we defined 7 files:
 
-1. **data_handler.py** which stores methods to import and handle data
-2. **data_prepocesser.py** which stores methods to prepocess data
-3. **term_document_matrix.py** which stores methods to create the term document matrix
-4. **svd.py** which stores methods to perform the singol value decomposition and dimensionality reduction
-5. **lsi_analyzer.py** which stores methods to analyze the resulting latent semantic indexing
-6. **lsi_evaluater.py** which store methods to evaluate the resulting latent semantic indexing
-7. **fftq_handler.py** which stores methods to handle free form text queries
-8. **lsi_ir.py** which stores methods to define an information retrieval system that uses lsi
-9. **project.ipynb** which serves as final wrapper for everything
+1. **data_handler.py** which stores methods to import, handle and preprocess data
+2. **term_document_matrix.py** which stores methods to create the term document matrix
+3. **svd.py** which stores methods to perform the singol value decomposition and dimensionality reduction
+4. **lsi.py** which stores methods to analyze, use and evaluate the latent semantic indexing
+5. **fftq_handler.py** which stores methods to handle free form text queries
+6. **lsi_ir.py** which stores methods to define an information retrieval system that uses lsi
+7. **project.ipynb** which serves as final wrapper for everything
 
 *Authors : Bortolussi L., Bredariol F., Tonet L.*
