@@ -1,4 +1,5 @@
 # LATENT SEMANTIC INDEXING
+
 ---
 
 This is the final project for the 2024/2025 course in "information retrieval".
