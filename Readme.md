@@ -16,7 +16,7 @@ Our work is divided in various part. In particular we defined 7 files:
 
 1. **data_handler.py** which stores methods to import, handle and preprocess data
 2. **term_document_matrix.py** which stores methods to create the term document matrix
-3. **svd.py** which stores methods to perform the singol value decomposition and dimensionality reduction
+3. **svd.py** which stores methods to perform the single value decomposition and dimensionality reduction
 4. **lsi.py** which stores methods to analyze, use and evaluate the latent semantic indexing
 5. **fftq_handler.py** which stores methods to handle free form text queries
 6. **lsi_ir.py** which stores methods to define an information retrieval system that uses lsi
