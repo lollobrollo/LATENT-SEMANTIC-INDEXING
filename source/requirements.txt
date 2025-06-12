@@ -1,0 +1,14 @@
+"""
+Here's a list of all required libraries for all files.
+
+data_handler.py:
+- 'pandas'
+--> 'pyarrow' and 'fastparquet' are required to read/write from/to files with parquet formatting
+- 'spacy'
+--> the pretrained pipeline used has to be downloaded separately: 
+    python -m spacy download en_core_web_sm
+- 'tqdm'
+
+
+
+"""
