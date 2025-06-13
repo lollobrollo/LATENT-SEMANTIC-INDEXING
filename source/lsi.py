@@ -157,7 +157,9 @@ if __name__ == '__main__':
     lsi_handler.analyze_lsi_matrices()
     lsi_handler.analyze_lsi_concepts_composition()"""
     from term_document_matrix import *
-    df = pd.read_parquet("./data/test/test.parquet")
+    from data_handler import *
+    df = parse_to_dataframe('data\\cran\\cran.all.1400')
+    df = preprocess_for_lsi(df)
     tdm, term_indexes = build_term_documents_mat(df)
     print(term_indexes[[1, 2, 3]])
     lsi_handler = LSI(tdm, n_components=100, terms_indexes=term_indexes)

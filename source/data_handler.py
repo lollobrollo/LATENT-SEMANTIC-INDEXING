@@ -8,6 +8,7 @@ import pandas as pd
 import spacy
 from tqdm import tqdm
 
+import re
 
 # File format considdered: dot-tagged dataset
 # Each document is encoded as follows:
@@ -121,6 +122,7 @@ def preprocess_for_lsi(
         for doc in docs:
             tokens = []
             for token in doc:
+
                 # Check conditions for skipping a token
                 if remove_punct and token.is_punct:
                     continue
