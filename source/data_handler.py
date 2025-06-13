@@ -182,7 +182,7 @@ def read_from_parquet(file_path: str) -> pd.DataFrame:
 # Example usage
 if __name__ == '__main__':
     print("Parsing the docs...")
-    df = parse_to_dataframe('data\\cran\\cran.all.1400')
+    df = parse_to_dataframe('LSI\\data\\cran\\cran.all.1400')
     print("Parsing complete.\nMoving on to preprpocessing...")
     # print(df.head())
     df = preprocess_for_lsi(df, text_columns=['T', 'W'])
