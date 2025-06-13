@@ -69,8 +69,7 @@ def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> 
 
 # Example usage
 if __name__ == '__main__':
-    df = pd.read_parquet(r"D:\UNI\3° ANNO\DATA VIS & INFORMATION RETRIEVAL\IR Project\LSI\data\test\test.parquet")
+    df = pd.read_parquet("./data/test/test.parquet")
     td_matrix = build_term_documents_mat(df)
-
-    print(td_matrix.shape)
+    print(td_matrix)
     
