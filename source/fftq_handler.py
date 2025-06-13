@@ -62,6 +62,13 @@ def preprocess_query_for_lsi(
     
     return ' '.join(tokens)
 
+def term_query_vector(preprocessed_query : str, list_of_terms : list, mode : str = 'one_hot'):
+    """
+    Returns the term vector representation of the prepocessed query. 
+    It is relevant how the term vector representation is computed. 
+    """
+    pass
+
 if __name__ == '__main__':
     query = "Does everyone know something except me?"
     print(preprocess_query_for_lsi(query))
