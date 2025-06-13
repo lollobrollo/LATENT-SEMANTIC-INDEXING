@@ -1,7 +1,7 @@
 """
 Here's a list of all required libraries for all files.
 
-data_handler.py:
+1. data_handler.py:
 - 'pandas'
 --> 'pyarrow' and 'fastparquet' are required to read/write from/to files with parquet formatting
 - 'spacy'
@@ -10,5 +10,25 @@ data_handler.py:
 - 'tqdm'
 
 
+2. term_document_matrix.py:
+- 
+
+3. svd.py
+- 'scikitlearn'
+--> in particular, from sklearn.decomposition is imported TruncatedSVD;
+    the method assumes to be working with a scipy sparse matrix 
+
+
+4. lsi.py
+- 
+
+5. fftq_handler.py:
+- 
+
+6. lsi_ir.py:
+- 
+
+7. project.ipynb:
+- 
 
 """
