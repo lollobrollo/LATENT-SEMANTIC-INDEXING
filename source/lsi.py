@@ -84,7 +84,7 @@ class LSI:
         plt.legend()
         plt.show()
 
-    def analyze_lsi_concepts_composition(self, concept_index : int = 0, n_terms : int = 10):
+    def analyze_lsi_concepts_composition(self, concept_index : int = 0, n_terms : int = 20):
         """
             This function analyze how concepts are defined wrt the terms. 
             Technically it shows term weights for a given concept. 
@@ -103,11 +103,11 @@ class LSI:
         interested_indexes = sorted_indexing[-n_terms:]
 
         plt.figure(figsize=(8, 6))
-
-        plt.barh(self.term_indexes[interested_indexes], concept_weights[interested_indexes], color = 'orange')
+        
+        plt.barh([i for i in range (n_terms, 0, -1)], concept_weights[interested_indexes], tick_label = self.term_indexes[interested_indexes], color = 'orange')
+        #plt.barh(self.term_indexes[interested_indexes], concept_weights[interested_indexes], color = 'orange')
         plt.title(f"Term Weights for Concept {concept_index}")
         plt.xlabel(f"Weights")
-        plt.legend()
         plt.show()
     
     def save(self, path : str):
@@ -159,6 +159,9 @@ if __name__ == '__main__':
     from term_document_matrix import *
     df = pd.read_parquet("./data/test/test.parquet")
     tdm, term_indexes = build_term_documents_mat(df)
-    lsi_handler = LSI(tdm.T, n_components=100)
-    #lsi_handler.analyze_lsi_matrices(concept_index_1=0, concept_index_2=10)
-    lsi_handler.analyze_lsi_concepts_composition()
+    print(term_indexes[[1, 2, 3]])
+    lsi_handler = LSI(tdm, n_components=100, terms_indexes=term_indexes)
+    lsi_handler.analyze_lsi_concepts_composition(0)
+    lsi_handler.analyze_lsi_concepts_composition(1)
+    #lsi_handler.analyze_lsi_matrices(concept_index_1=0, concept_index_2=1)
+    
