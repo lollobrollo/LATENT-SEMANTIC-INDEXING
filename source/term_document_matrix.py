@@ -65,7 +65,7 @@ def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> 
 
             term_document_matrix[indexed_vocab[term], doc_idx] = freq
 
-    return term_document_matrix
+    return term_document_matrix, indexed_vocab
 
 # Example usage
 if __name__ == '__main__':
