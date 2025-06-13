@@ -75,7 +75,7 @@ def parse_to_dataframe(file_path: str) -> pd.DataFrame:
 
 def preprocess_for_lsi(
     df: pd.DataFrame,
-    text_column: str = 'W',
+    text_columns: list = ['W'],
     lowercase: bool = True,
     remove_punct: bool = True,
     remove_stop: bool = True,
@@ -88,7 +88,7 @@ def preprocess_for_lsi(
 
     Parameters:
     - df (pd.DataFrame) : Input DataFrame.
-    - text_column (str) : The name of the column containing the text.
+    - text_columns (list) : The name of the columns containing the text.
     - lowercase (bool) : If True, convert text to lowercase.
     - remove_punct (bool) : If True, remove punctuation tokens.
     - remove_stop (bool) : If True, remove stopword tokens.
@@ -99,7 +99,7 @@ def preprocess_for_lsi(
                           If None, all tokens are kept.
 
     Returns:
-    - pd.DataFrame : DataFrame with a new 'W_clean' column.
+    - pd.DataFrame : DataFrame with a new 'clean_text' column.
     """
     if allowed_pos is None:
         allowed_pos = ['NOUN', 'PROPN', 'ADJ', 'VERB', 'ADV'] # Default meaningful POS
@@ -109,40 +109,45 @@ def preprocess_for_lsi(
     # Pipeline that will do the hard work for us
     NLP = spacy.load("en_core_web_sm", disable=['parser', 'ner'])
 
-    # Process texts in batches using nlp.pipe() for performance
-    # list() turns the tqdm iterator (which wraps the nlp.pipe generator) into a list
-    docs = list(tqdm(NLP.pipe(df_copy[text_column].fillna("").astype(str)), total=len(df_copy)))
+    # List used to store data from all columns required
+    all_texts = {key: [] for key in text_columns}
 
-    cleaned_texts = []
-    for doc in docs:
-        tokens = []
-        for token in doc:
-            # Check conditions for skipping a token
-            if remove_punct and token.is_punct:
-                continue
-            if remove_stop and token.is_stop:
-                continue
-            if remove_num and token.like_num:
-                continue
-            if allowed_pos and token.pos_ not in allowed_pos:
-                continue
+    for text_column in text_columns:
+        print(f'Now processing column {text_column} ...')
+        # Process texts in batches using nlp.pipe() for performance
+        # list() turns the tqdm iterator (which wraps the nlp.pipe generator) into a list
+        docs = list(tqdm(NLP.pipe(df_copy[text_column].fillna("").astype(str)), total=len(df_copy)))
 
-            # Determine the final form of the word
-            if lemmatize:
-                word = token.lemma_
-            else:
-                word = token.text
+        for doc in docs:
+            tokens = []
+            for token in doc:
+                # Check conditions for skipping a token
+                if remove_punct and token.is_punct:
+                    continue
+                if remove_stop and token.is_stop:
+                    continue
+                if remove_num and token.like_num:
+                    continue
+                if allowed_pos and token.pos_ not in allowed_pos:
+                    continue
+
+                # Determine the final form of the word
+                if lemmatize:
+                    word = token.lemma_
+                else:
+                    word = token.text
+                
+                if lowercase:
+                    word = word.lower()
+
+                # Safeguard that checks if there's any actual content left in the word
+                if word.strip():
+                    tokens.append(word)
             
-            if lowercase:
-                word = word.lower()
+            all_texts[text_column].append(" ".join(tokens))
 
-            # Safeguard that checks if there's any actual content left in the word
-            if word.strip():
-                tokens.append(word)
-        
-        cleaned_texts.append(" ".join(tokens))
-
-    df_copy['W_clean'] = cleaned_texts
+    # Turn the dictionary in a list, put together text of the same docs with zip() and then join them into the new column
+    df_copy['clean_text'] = [ ' '.join(elems) for elems in zip(*[all_texts[key] for key in all_texts])]
     return df_copy
 
 
@@ -180,14 +185,14 @@ if __name__ == '__main__':
     df = parse_to_dataframe('data\\cran\\cran.all.1400')
     print("Parsing complete.\nMoving on to preprpocessing...")
     # print(df.head())
-    df = preprocess_for_lsi(df)
-    print("Preprocessing complete.")
-    print(df.loc[5, 'W'])
-    print(df.loc[5,'W_clean'])
+    df = preprocess_for_lsi(df, text_columns=['T', 'W'])
+    print("Preprocessing complete.\n")
+    print(df.loc[5, 'W'],'\n')
+    print(df.loc[5,'clean_text'])
 
     # Test if saving to file works as expected
-    print("Now writing to file...")
+    print("\nNow writing to file...")
     write_to_parquet(df, '.\\data\\test\\test.parquet')
-    print("Now reading from file...")
+    print("Now reading from file...\n")
     df = read_from_parquet('.\\data\\test\\test.parquet')
-    print(df.loc[5,'W_clean'])
+    print(df.loc[5,'clean_text'])
