@@ -4,7 +4,7 @@
 """
 
 import spacy
-import tqdm
+import re
 
 def preprocess_query_for_lsi(
     query : str,
@@ -56,6 +56,12 @@ def preprocess_query_for_lsi(
         
         if lowercase:
             word = word.lower()
+
+        # Clean up if spacy missed them
+        if remove_punct:
+            word = re.sub(r'[^a-zA-Z]+', '', word)
+        if remove_num:
+            word = re.sub(r'[0-9]+', '', word)
 
         if word.strip():
             tokens.append(word)
