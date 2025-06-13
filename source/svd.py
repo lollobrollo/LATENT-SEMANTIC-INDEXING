@@ -4,6 +4,7 @@
 """
 
 from sklearn.decomposition import TruncatedSVD
+import numpy as np
 
 def perform_svd(matrix, n_components=100):
     """
@@ -20,3 +21,8 @@ def perform_svd(matrix, n_components=100):
     svd = TruncatedSVD(n_components=n_components, random_state=24)
     reduced_matrix = svd.fit_transform(matrix)
     return reduced_matrix, svd
+
+if __name__ == '__main__':
+    m = np.random.random((200, 100))
+    r, s = perform_svd(m)
+    print(s.singular_values_)
