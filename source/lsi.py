@@ -86,7 +86,7 @@ class LSI:
         plt.legend()
         plt.show()
 
-    def analyze_lsi_concepts_composition(self, concept_index : int):
+    def analyze_lsi_concepts_composition(self, concept_index : int = 0):
         """
             This function analyze how concepts are defined wrt the terms. 
             Technically it shows term weights for a given concept. 
@@ -142,7 +142,7 @@ def load(path : str) -> LSI:
 
 if __name__ == '__main__':
 
-    tdm = np.array([[0, 0, 0, 1], [0, 1, 1, 0], [1, 0, 0, 1], [1, 1, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1]])
+    """tdm = np.array([[0, 0, 0, 1], [0, 1, 1, 0], [1, 0, 0, 1], [1, 1, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1]])
     document_indexes = np.array(['a', 'b', 'c', 'd', 'e', 'f'])
     term_indexes = np.array(['alpha', 'beta', 'casa', 'delta'])
     lsi_handler = LSI(tdm, n_components=2, document_indexes=document_indexes, terms_indexes=term_indexes)
@@ -151,4 +151,7 @@ if __name__ == '__main__':
     lsi_handler.save("./source/lsi_saving_proof")
     lsi_handler = load("./source/lsi_saving_proof")
     print("---")
-    print(lsi_handler)
+    print(lsi_handler)"""
+    lsi_handler = load("./source/lsi_saving_proof")
+    lsi_handler.analyze_lsi_matrices()
+    lsi_handler.analyze_lsi_concepts_composition()
