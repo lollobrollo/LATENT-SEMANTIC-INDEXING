@@ -3,9 +3,7 @@
     Authors : Bortolussi L., Bredariol F., Tonet L.
 """
 
-
 from svd import *
-import sklearn as sk
 import numpy as np
 import pickle
 from matplotlib import pyplot as plt

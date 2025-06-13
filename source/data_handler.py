@@ -117,7 +117,7 @@ def preprocess_for_lsi(
         # Process texts in batches using nlp.pipe() for performance
         # list() turns the tqdm iterator (which wraps the nlp.pipe generator) into a list
         docs = list(tqdm(NLP.pipe(df_copy[text_column].fillna("").astype(str)), total=len(df_copy)))
-
+        
         for doc in docs:
             tokens = []
             for token in doc:
