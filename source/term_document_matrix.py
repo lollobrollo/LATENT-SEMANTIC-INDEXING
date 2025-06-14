@@ -17,7 +17,7 @@ def create_vocab(docs: pd.DataFrame) -> list:
 
     return list(set(vocab)), term_frequencies
 
-def build_term_documents_mat(df: pd.DataFrame) -> np.array:
+def build_term_documents_mat(df: pd.DataFrame, boolean_matrix : bool = False) -> np.array:
 
     docs = df["clean_text"]
 
@@ -31,7 +31,8 @@ def build_term_documents_mat(df: pd.DataFrame) -> np.array:
     for doc_idx, tf_doc in enumerate(term_freq):
         for term, freq in tf_doc.items():
 
-            if boolean_matrix: freq = 1
+            if boolean_matrix:
+                freq = 1
 
             term_document_matrix[indexed_vocab[term], doc_idx] = freq
 
@@ -42,5 +43,3 @@ if __name__ == '__main__':
     df = pd.read_parquet("./data/test/test.parquet")
     td_matrix = build_term_documents_mat(df)
     print(td_matrix)
-    
-    return
