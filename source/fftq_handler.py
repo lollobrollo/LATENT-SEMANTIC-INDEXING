@@ -5,6 +5,7 @@
 
 import spacy
 import re
+import numpy as np
 
 def preprocess_query_for_lsi(
     query : str,
@@ -74,14 +75,29 @@ def preprocess_query_for_lsi(
     
     return ' '.join(tokens)
 
-def term_query_vector(preprocessed_query : str, list_of_terms : list, mode : str = 'one_hot'):
+def term_query_vector(preprocessed_query : str, term_indexes : np.ndarray, boolean_vector : bool = False):
     """
     Returns the term vector representation of the prepocessed query. 
-    It is relevant how the term vector representation is computed. 
+    
+    Parameters:
+    - preprocessed_query (str) : the query preprocessed as needed
+    - term_indexes (np.ndarray) : the ordered set of all terms in the collection where we are retrieving
+    - boolean_vector (bool) : if the output vector is a boolean one (presence or absence of the term in the query)
+                              or a frequencies one (how many times the term is present in the query)
     """
-    pass
+    query_vector = np.zeros(term_indexes.shape)
+    for term in preprocessed_query.split():
+        idx = np.where(term_indexes == term)
+        if len(idx) != 0: # if the term is present in the collection of document
+            query_vector[idx[0]] += 1
+            if boolean_vector:
+                query_vector[idx[0]] = 1
+    return query_vector
 
 if __name__ == '__main__':
-    query = "Does everyone know something except me?"
-    print(preprocess_query_for_lsi(query))
+    indexes = np.array(['alpha', 'beta', 'gamma'])
+    query = 'is alpha a beta delta?'
+    p_q = preprocess_query_for_lsi(query)
+    q_v = term_query_vector(p_q, indexes)
+    print(q_v)
     
