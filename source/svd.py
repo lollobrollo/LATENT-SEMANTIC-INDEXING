@@ -23,6 +23,10 @@ def perform_svd(matrix, n_components=100):
     return reduced_matrix, svd
 
 if __name__ == '__main__':
-    m = np.random.random((200, 100))
-    r, s = perform_svd(m)
-    print(s.singular_values_)
+    m = np.array([[1, 0, 0], [1, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1]])
+    print(m)
+    r, s = perform_svd(m, n_components=2)
+    print(r)
+    print(np.eye(r.shape[1])*s.singular_values_)
+    print(s.components_)
+    print(r @ s.components_)

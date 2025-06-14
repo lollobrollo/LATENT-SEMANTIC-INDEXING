@@ -67,7 +67,7 @@ def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> 
 
             term_document_matrix[indexed_vocab[term], doc_idx] = freq
 
-    return term_document_matrix, sorted_vocab
+    return term_document_matrix, np.array(sorted_vocab)
 
 
 def compute_doc_freq(td_matrix: np.array) -> np.array:

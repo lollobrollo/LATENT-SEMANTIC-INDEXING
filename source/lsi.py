@@ -14,7 +14,7 @@ class LSI:
         Since there exists an outside method which load an already computed object of this class, it can be used instead of the init to prevent to recompute the svd.
     """
 
-    def __init__(self, document_term_matrix : np.ndarray, n_components : int = 100, document_indexes : np.ndarray | None = None, terms_indexes : np.ndarray | None = None):
+    def __init__(self, term_document_matrix : np.ndarray, n_components : int = 100, document_indexes : np.ndarray | None = None, terms_indexes : np.ndarray | None = None):
         """
             Parameters:
             - document_term_matrix is the document term matrix. It is assumed to be an np array
@@ -25,10 +25,10 @@ class LSI:
             Note : if document indexes and term indexes are none, document and terms will be just referred to as numbers (a default array will be created). 
             Otherwise their titles/values will be visualized.
         """
-        self.document_term_matrix = document_term_matrix
+        self.term_document_matrix = term_document_matrix
         self.n_components = n_components
-        self.document_indexes = document_indexes if document_indexes is not None else np.array([i for i in range (document_term_matrix.shape[0])])
-        self.term_indexes = terms_indexes if terms_indexes is not None else  np.array([i for i in range (document_term_matrix.shape[1])])
+        self.document_indexes = document_indexes if document_indexes is not None else np.array([i for i in range (term_document_matrix.shape[0])])
+        self.term_indexes = terms_indexes if terms_indexes is not None else  np.array([i for i in range (term_document_matrix.shape[1])])
         self.compute_lsi()
     
     def compute_lsi(self):
@@ -38,9 +38,12 @@ class LSI:
             2. the concept strength vector (singular values)
             3. the term concept similarity matrix (principal components)
         """
-        self.document_concept_similarity, self.s_v_d = perform_svd(self.document_term_matrix, self.n_components)
+        # perform svd returns U*S, object. In this object one can obtain S = diag(obj.singular_values_) and V* = obj.components_
+        # so U will be U * S / obj.singular_values_
+        self.term_concept_similarity, self.s_v_d = perform_svd(self.term_document_matrix, self.n_components)
+        self.term_concept_similarity = self.term_concept_similarity / self.s_v_d.singular_values_
         self.concept_strength = self.s_v_d.singular_values_
-        self.term_concept_similarity = self.s_v_d.components_.T
+        self.document_concept_similarity = self.s_v_d.components_.T
     
     def get_lsi_matrices(self):
         """
@@ -97,14 +100,14 @@ class LSI:
         if concept_index >= self.n_components:
             print(f"\033[93mError. Concept index too large! It must be in the range [0, {self.n_components - 1}]\033[97m ")
             raise ValueError
-
+        
         concept_weights = abs(self.term_concept_similarity.T[concept_index])
         sorted_indexing = np.argsort(concept_weights)
         interested_indexes = sorted_indexing[-n_terms:]
 
         plt.figure(figsize=(8, 6))
         
-        plt.barh([i for i in range (n_terms, 0, -1)], concept_weights[interested_indexes], tick_label = self.term_indexes[interested_indexes], color = 'orange')
+        plt.barh([i for i in range (n_terms, 0, -1)], self.term_concept_similarity.T[concept_index][interested_indexes], tick_label = self.term_indexes[interested_indexes], color = 'orange')
         #plt.barh(self.term_indexes[interested_indexes], concept_weights[interested_indexes], color = 'orange')
         plt.title(f"Term Weights for Concept {concept_index}")
         plt.xlabel(f"Weights")
@@ -158,11 +161,10 @@ if __name__ == '__main__':
     lsi_handler.analyze_lsi_concepts_composition()"""
     from term_document_matrix import *
     from data_handler import *
-    df = parse_to_dataframe('data\\cran\\cran.all.1400')
+    df = parse_to_dataframe('data\\cat encyclopedia\\documents.all.5')
     df = preprocess_for_lsi(df)
     tdm, term_indexes = build_term_documents_mat(df)
-    print(term_indexes[[1, 2, 3]])
-    lsi_handler = LSI(tdm, n_components=100, terms_indexes=term_indexes)
+    lsi_handler = LSI(tdm, n_components = 5, terms_indexes=term_indexes)
     lsi_handler.analyze_lsi_concepts_composition(0)
     lsi_handler.analyze_lsi_concepts_composition(1)
     #lsi_handler.analyze_lsi_matrices(concept_index_1=0, concept_index_2=1)

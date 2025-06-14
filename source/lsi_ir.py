@@ -48,9 +48,9 @@ class LSI_IR:
         else:
             self.preprocessed_df = preprocess_for_lsi(self.parsed_df, *self.preprocess_protocol)
         
-        self.term_frequencies_matrix, self.term_indexes = build_term_documents_mat(self.preprocessed_df, boolean_matrix)
+        self.term_document_matrix, self.term_indexes = build_term_documents_mat(self.preprocessed_df, boolean_matrix)
 
-        self.latent_semantic_indexing = LSI(self.term_frequencies_matrix, n_components=self.n_components, terms_indexes=self.term_indexes)
+        self.latent_semantic_indexing = LSI(self.term_document_matrix, n_components=self.n_components, terms_indexes=self.term_indexes)
 
     def retrieve(self, query : str, n_doc : int = 5):
         """
@@ -71,9 +71,12 @@ class LSI_IR:
 
         query_vector = term_query_vector(preprocessed_query, self.term_indexes, self.boolean_matrix)
 
-        query_lsi = self.latent_semantic_indexing.s_v_d.transform(query_vector.reshape(-1, 1).T)
+        query_lsi = np.linalg.inv(np.diag(self.latent_semantic_indexing.concept_strength)) @ self.latent_semantic_indexing.term_concept_similarity.T @ (query_vector.reshape(-1, 1))
 
-        similarities = cosine_similarity(query_lsi, self.latent_semantic_indexing.document_concept_similarity)
+        print(query_lsi.shape)
+        print(self.latent_semantic_indexing.document_concept_similarity.shape)
+        
+        similarities = cosine_similarity(query_lsi.T, self.latent_semantic_indexing.document_concept_similarity)
 
         doc_indexes = np.argsort(similarities[0])[::-1] # Sort by descending similarity
 
@@ -116,4 +119,4 @@ if __name__ == '__main__':
     else:
         fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, boolean_matrix=None, n_components=100)
         fr.save(path)
-    fr.retrieve("rectangular plates")
+    fr.retrieve("buckling of circular cones under axial")
