@@ -7,19 +7,6 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 
-def compute_doc_freq(td_matrix: np.array) -> np.array:
-    """
-    Counts the documents where a term appears
-
-    Parameters:
-    - td_matrix (np.array): a precomputed term document matrix. It can be "one-hot encoded" or "term frequencies".
-
-    Returns:
-    - np.array: "document frequency" for each term. The idx of terms matches the one of the matrix
-    """
-
-    return np.count_nonzero(td_matrix, axis=1)
-
 
 def create_vocab(docs: pd.DataFrame) -> list:
     """
@@ -82,6 +69,34 @@ def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> 
 
     return term_document_matrix, sorted_vocab
 
+
+def compute_doc_freq(td_matrix: np.array) -> np.array:
+    """
+    Counts the documents where a term appears
+
+    Parameters:
+    - td_matrix (np.array): a precomputed term document matrix. It can be "one-hot encoded" or "term frequencies".
+
+    Returns:
+    - np.array: "document frequency" for each term. The idx of terms matches the one of the matrix
+    """
+
+    return np.count_nonzero(td_matrix, axis=1)
+
+def compute_idf(td_matrix: np.array, document_freq: np.array) -> np.array:
+    idfs = []
+    
+    for i in range(td_matrix.shape[0]):
+        idfs.append(np.log10(td_matrix.shape[1] / document_freq[i]))
+    return np.array(idfs)
+
+
+def build_tfidf_mat(td_matrix: np.array, idf_array: np.array) -> np.array:
+    tfidf_matrix = td_matrix.copy()
+    for i in range(td_matrix.shape[0]):
+        tfidf_matrix[i, :] *= idf_array[i]
+
+    return tfidf_matrix
 # Example usage
 if __name__ == '__main__':
     df = pd.read_parquet(r"D:\UNI\3° ANNO\DATA VIS & INFORMATION RETRIEVAL\IR Project\LSI\data\test\test.parquet")
