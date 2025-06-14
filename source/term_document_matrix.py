@@ -67,7 +67,7 @@ def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> 
 
             term_document_matrix[indexed_vocab[term], doc_idx] = freq
 
-    return term_document_matrix.T, np.array(sorted_vocab)
+    return term_document_matrix, sorted_vocab
 
 
 def compute_doc_freq(td_matrix: np.array) -> np.array:
@@ -84,19 +84,39 @@ def compute_doc_freq(td_matrix: np.array) -> np.array:
     return np.count_nonzero(td_matrix, axis=1)
 
 def compute_idf(td_matrix: np.array, document_freq: np.array) -> np.array:
-    idfs = []
-    
-    for i in range(td_matrix.shape[0]):
-        idfs.append(np.log10(td_matrix.shape[1] / document_freq[i]))
-    return np.array(idfs)
+    """
+    Computes the Inverse Document Frequency (IDF) for each term.
+
+    Parameters:
+    - td_matrix (np.array): term-document matrix (can contain term frequencies or binary values).
+    - document_freq (np.array): array of document frequencies (i.e., number of documents where each term appears).
+
+    Returns:
+    - np.array: IDF score for each term. Same order as the rows of td_matrix.
+    """
+
+    n_docs = td_matrix.shape[1]
+    return np.log10(n_docs / (document_freq + 1))
 
 
 def build_tfidf_mat(td_matrix: np.array, idf_array: np.array) -> np.array:
+    """
+    Builds the TF-IDF matrix by combining term frequencies with IDF scores.
+
+    Parameters:
+    - td_matrix (np.array): term-document matrix with term frequencies.
+    - idf_array (np.array): precomputed IDF values, one per term.
+
+    Returns:
+    - np.array: TF-IDF matrix with same shape as td_matrix.
+    """
+
     tfidf_matrix = td_matrix.copy()
     for i in range(td_matrix.shape[0]):
         tfidf_matrix[i, :] *= idf_array[i]
 
     return tfidf_matrix
+
 # Example usage
 if __name__ == '__main__':
     df = pd.read_parquet(r"D:\UNI\3° ANNO\DATA VIS & INFORMATION RETRIEVAL\IR Project\LSI\data\test\test.parquet")
