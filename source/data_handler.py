@@ -7,7 +7,6 @@
 import pandas as pd
 import spacy
 from tqdm import tqdm
-
 import re
 
 # File format considdered: dot-tagged dataset
@@ -115,6 +114,13 @@ def preprocess_for_lsi(
 
     for text_column in text_columns:
         print(f'Now processing column {text_column} ...')
+
+        # Prior cleanup since spacy misses some stuff
+        if remove_punct and remove_num:
+            df_copy[text_column] = df_copy[text_column].apply(lambda x: re.sub(r'[^a-zA-Z ]+', '', x))
+        elif remove_punct:
+            df_copy[text_column] = df_copy[text_column].apply(lambda x: re.sub(r'[^a-zA-Z0-9 ]+', '', x))
+
         # Process texts in batches using nlp.pipe() for performance
         # list() turns the tqdm iterator (which wraps the nlp.pipe generator) into a list
         docs = list(tqdm(NLP.pipe(df_copy[text_column].fillna("").astype(str)), total=len(df_copy)))
@@ -184,17 +190,17 @@ def read_from_parquet(file_path: str) -> pd.DataFrame:
 # Example usage
 if __name__ == '__main__':
     print("Parsing the docs...")
-    df = parse_to_dataframe('data\\cran\\cran.all.1400')
+    df = parse_to_dataframe('.\\data\\cran\\cran.all.1400')
     print("Parsing complete.\nMoving on to preprpocessing...")
     # print(df.head())
-    df = preprocess_for_lsi(df, text_columns=['T', 'W'])
+    df = preprocess_for_lsi(df, text_columns=['W'])
     print("Preprocessing complete.\n")
-    print(df.loc[5, 'W'],'\n')
-    print(df.loc[5,'clean_text'])
+    # print(df.loc[5, 'W'],'\n')
+    # print(df.loc[5,'clean_text'])
 
     # Test if saving to file works as expected
     print("\nNow writing to file...")
     write_to_parquet(df, '.\\data\\test\\test.parquet')
     print("Now reading from file...\n")
     df = read_from_parquet('.\\data\\test\\test.parquet')
-    print(df.loc[5,'clean_text'])
+    print(df.loc[13,'clean_text'])

@@ -35,6 +35,12 @@ def preprocess_query_for_lsi(
     if allowed_pos is None:
         allowed_pos = ['NOUN', 'PROPN', 'ADJ', 'VERB', 'ADV'] # Default meaningful POS
 
+    # Prior cleanup since spacy misses some stuff
+    if remove_punct and remove_num:
+        query = re.sub(r'[^a-zA-Z ]+', '', query)
+    elif remove_punct:
+        query = re.sub(r'[^a-zA-Z0-9 ]+', '', query)
+
     NLP = spacy.load("en_core_web_sm", disable=['parser', 'ner'])
     formatted_query = NLP(query)
     tokens = []
