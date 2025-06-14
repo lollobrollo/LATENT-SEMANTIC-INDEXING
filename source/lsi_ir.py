@@ -61,6 +61,8 @@ class LSI_IR:
             - n_doc (int) : number of documents to retrieve
         """
 
+        n_doc = min(n_doc, len(self.document_indexes))
+
         if self.preprocess_protocol == None:
             preprocessed_query = preprocess_query_for_lsi(query)
         else:
