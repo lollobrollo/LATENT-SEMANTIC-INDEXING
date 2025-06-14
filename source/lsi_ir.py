@@ -7,6 +7,8 @@ from term_document_matrix import *
 from lsi import *
 from fftq_handler import *
 from sklearn.metrics.pairwise import cosine_similarity
+import pickle
+import os
 
 class LSI_IR:
     """
@@ -77,10 +79,39 @@ class LSI_IR:
             print(f"Doc {idx} TITLE : {self.document_indexes[idx].upper()}\n \033[96m[Similarity: {similarities[0][idx]:.3f}]\033[97m")
 
         return doc_indexes[:n_doc]
+    
+    def save(self, path : str):
+        """
+            Methods to save the istance of the object.
+
+            Parameters:
+            -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
+        """
+        with open(f"{path}.pkl", 'wb') as f:
+            pickle.dump(self, f)
 
     def interface(self):
         pass
 
+def load(path) -> LSI_IR:
+    """
+            Methods to load one particular istance of an object of the clas LSI.
+
+            Parameters:
+            -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
+
+            Ouputs:
+            An object of the class LSI
+        """
+    with open(f"{path}.pkl", 'rb') as f:
+        obj = pickle.load(f)
+    return obj
+
 if __name__ == '__main__':
-    fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, boolean_matrix=None, n_components=100)
-    fr.retrieve("what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft .")
+    path = "source\\lsi_ir_saving_proof"
+    if os.path.exists(f"{path}.pkl"):
+        fr = load(path)
+    else:
+        fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, boolean_matrix=None, n_components=100)
+        fr.save(path)
+    fr.retrieve("rectangular plates")
