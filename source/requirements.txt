@@ -1,5 +1,7 @@
 """
 Here's a list of all required libraries for all files.
+'numpy' is omitted from below since it is used almost everywhere;
+other libraries (like 'os' and 'collections') are omitted, as they are part of the Python standard library.
 
 1. data_handler.py:
 - 'pandas'
@@ -11,24 +13,24 @@ Here's a list of all required libraries for all files.
 
 
 2. term_document_matrix.py:
-- 
+- 'pandas'
 
 3. svd.py
 - 'scikitlearn'
 --> in particular, from sklearn.decomposition is imported TruncatedSVD;
-    the method assumes to be working with a scipy sparse matrix 
-
+    the method assumes to be working with a scipy sparse matrix
 
 4. lsi.py
-- 
+- 'pickle'
+- 'matplotlib'
 
 5. fftq_handler.py:
-- 
+--> same as data_handler.py
 
 6. lsi_ir.py:
 - 
 
 7. project.ipynb:
-- 
+- 'tkinter'
 
 """

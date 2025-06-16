@@ -10,17 +10,17 @@ from matplotlib import pyplot as plt
 
 class LSI:
     """
-        This class store all methods to perform, to store, to use and to analyze the LSI given a document term matrix. 
-        Since there exists an outside method which load an already computed object of this class, it can be used instead of the init to prevent to recompute the svd.
+        This class stores all methods that have to do with LSI given a document term matrix.
+        Since there is an external method that loads a precomputed object of this class, it can be used instead of the initializer to avoid recomputing the SVD.
     """
 
     def __init__(self, term_document_matrix : np.ndarray, n_components : int = 100, document_indexes : np.ndarray | None = None, terms_indexes : np.ndarray | None = None):
         """
             Parameters:
-            - document_term_matrix is the document term matrix. It is assumed to be an np array
-            - n_components is the number of components you want to store 
-            - document_indexes is an array linking the index of a document in the document term matrix to its title
-           - term_indexes is an array linking the index of a term in the document term matrix to its value
+            - document_term_matrix : Document term matrix, assumed to be an np array
+            - n_components : number of components of the SVD to be stored 
+            - document_indexes : array linking the index of a document in the document term matrix to its title
+           - term_indexes : array linking the index of a term in the document term matrix to its value
 
             Note : if document indexes and term indexes are none, document and terms will be just referred to as numbers (a default array will be created). 
             Otherwise their titles/values will be visualized.
@@ -38,7 +38,7 @@ class LSI:
             2. the concept strength vector (singular values)
             3. the term concept similarity matrix (principal components)
         """
-        # perform svd returns U*S, object. In this object one can obtain S = diag(obj.singular_values_) and V* = obj.components_
+        # perform svd and returns U*S object. From this object one can obtain S = diag(obj.singular_values_) and V* = obj.components_
         # so U will be U * S / obj.singular_values_
         self.term_concept_similarity, self.s_v_d = perform_svd(self.term_document_matrix, self.n_components)
         self.term_concept_similarity = self.term_concept_similarity / self.s_v_d.singular_values_
@@ -47,10 +47,11 @@ class LSI:
     
     def get_lsi_matrices(self):
         """
-            Return the lsi matrices in addition to the singular values and the full object truncated svd.
-            Note that the core of lsi is the document concept similarity, since it store the representation of each document
-            in the new projected space on which we will compute the cosine similarity.
-            The order of return is the following:
+            Returns the lsi matrices, the singular values and the full object that is the truncated svd.
+            Note that the core of lsi is the document concept similarity, since it stores the representation of each document
+            in the new projected space, in which we will compute the cosine similarity.
+
+            In order, this returns:
             1. the document concept similarity matrix (lsi matrix) [numpy array]
             2. the term concept similarity matrix (principal components) [numpy array]
             3. the concept strength vector (singular values) [numpy array]
@@ -60,9 +61,9 @@ class LSI:
     
     def analyze_lsi_matrices(self, concept_index_1 : int = 0, concept_index_2 : int = 1):
         """
-            This function analyze the LSI matrix (how documents are projected on the reducted space). 
-            In particular it show the projection on the 2D space of all documents wrt the 2 concepts requested.
-            Concepts indexes must be valid, so they can not exceed the total number of components used to compute the svd.
+        This function analyzes the LSI matrix by showing how documents are projected onto the reduced space.
+        Specifically, it visualizes the projection of all documents in a 2D space defined by two requested concept indices.
+        The concept indices must be valid—that is, they cannot exceed the total number of components used in the SVD computation.
         """
 
         if concept_index_1 >= self.n_components or concept_index_2 >= self.n_components:
@@ -89,13 +90,12 @@ class LSI:
 
     def analyze_lsi_concepts_composition(self, concept_index : int = 0, n_terms : int = 20):
         """
-            This function analyze how concepts are defined wrt the terms. 
-            Technically it shows term weights for a given concept. 
-            Concept index must be valid, so they can not exceed the total number of components used to compute the svd.
+            This function analyzes how concepts are defined wrt the terms, by showing term weights for a given concept.
+            Concept index must be valid, so it can not exceed the total number of components used to compute the svd.
 
             Parameters:
-            - concept_index is the index of the concept to analyze
-            - n_terms is the number of terms to take in consideration (the n with the greatest weights magnitude)
+            - concept_index : the index of the concept to analyze
+            - n_terms : the number of terms to take in consideration (the n with the greatest weights magnitude)
         """
         if concept_index >= self.n_components:
             print(f"\033[93mError. Concept index too large! It must be in the range [0, {self.n_components - 1}]\033[97m ")
@@ -115,10 +115,10 @@ class LSI:
     
     def save(self, path : str):
         """
-            Methods to save the istance of the object.
+            Method to save an istance of this object.
 
             Parameters:
-            -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
+            - path : The file path as a string. It should not include a file extension (e.g., .txt, .csv), the function will handle adding the appropriate extension.
         """
         with open(f"{path}.pkl", 'wb') as f:
             pickle.dump(self, f)
@@ -132,14 +132,14 @@ class LSI:
     
 def load(path : str) -> LSI:
     """
-            Methods to load one particular istance of an object of the clas LSI.
+        Methods to load one particular istance of an object of the clas LSI.
 
-            Parameters:
-            -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
+        Parameters:
+        -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
 
-            Ouputs:
-            An object of the class LSI
-        """
+        Ouputs:
+        An object of the class LSI
+    """
     with open(f"{path}.pkl", 'rb') as f:
         obj = pickle.load(f)
     return obj
