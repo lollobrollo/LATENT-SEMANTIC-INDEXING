@@ -12,10 +12,10 @@ import os
 
 class LSI_IR:
     """
-    The LSI_IR is the wrapper for all what has been developed so far.
-    We could take advantage of the possibility to load and store things around, 
-    but for now this class will always read the data, preprocess them, create
-    the term document matrix, compute the svd and on this space answer the query.
+    The LSI_IR class is the wrapper for all that has been developed so far.
+    We could take advantage of the possibility to load and store things around,
+    but for now this class will always read the data, preprocess it, create
+    the term document matrix, compute the svd and answer the query in this space.
     """
     def __init__(self, data_path : str, preprocess_protocol : tuple | None = None, boolean_matrix : bool = False, n_components : int = 100):
         """
@@ -23,7 +23,7 @@ class LSI_IR:
             - data_path (str) : where the collection is stored.
             - preprocess_protocol (tuple) : tuple of values used by the preprocessing for both the collection and queries.
               It is composed as follow: 
-                    - text_columns (list) : The name of the columns containing the text.
+                    - text_columns (list) : The name of the columns containing the text to be preprocessed.
                     - lowercase (bool) : If True, convert text to lowercase.
                     - remove_punct (bool) : If True, remove punctuation tokens.
                     - remove_stop (bool) : If True, remove stopword tokens.
@@ -32,9 +32,9 @@ class LSI_IR:
                     - allowed_pos (list) : A list of Part-of-Speech tags to keep.
                                         Example: ['NOUN', 'PROPN', 'ADJ', 'VERB'].
                                         If None, all tokens are kept.
-                IF SETTED TO NONE the default option will be considered
-            - boolean_matrix (bool) : how to compute the term document matrix
-            - n_components (int) : number of components to consider for the svd. 
+              IF SET TO NONE the default option will be considered.
+            - boolean_matrix (bool) : how to compute the term document matrix.
+            - n_components (int) : number of components to consider for the svd.
         """
         self.preprocess_protocol = preprocess_protocol
         self.boolean_matrix = boolean_matrix
@@ -87,10 +87,10 @@ class LSI_IR:
     
     def save(self, path : str):
         """
-            Methods to save the istance of the object.
+            Method that saves the istance of the object.
 
             Parameters:
-            -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
+            -path : The file path as a string. It should not include a file extension (e.g., .txt, .csv), the function will handle adding the appropriate extension.
         """
         with open(f"{path}.pkl", 'wb') as f:
             pickle.dump(self, f)
@@ -100,10 +100,10 @@ class LSI_IR:
 
 def load(path) -> LSI_IR:
     """
-            Methods to load one particular istance of an object of the clas LSI.
+            Method that loads one particular istance of an object of the clas LSI.
 
             Parameters:
-            -path is the file path. It must be a str and it should end without any extension (eg .txt, .csv). The extension will be handled by the function.
+            -path : The file path as a string. It should not include a file extension (e.g., .txt, .csv), the function will handle adding the appropriate extension.
 
             Ouputs:
             An object of the class LSI
