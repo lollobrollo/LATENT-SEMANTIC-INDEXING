@@ -50,7 +50,10 @@ def build_term_documents_mat(df: pd.DataFrame, metric: str = "freq") -> np.array
     - np.array: A 2D NumPy array where rows are terms and columns are documents.
                 Each entry represents the frequency of a term in a document.
     """
-        
+
+    if metric not in ["bool", "freq", "tf-idf"]:
+        raise Exception("Invalid metric")
+    
     docs = df["clean_text"]
 
     vocab , term_freq = create_vocab(docs)
@@ -69,7 +72,7 @@ def build_term_documents_mat(df: pd.DataFrame, metric: str = "freq") -> np.array
     
     if metric == "tf-idf":
         term_document_matrix = build_tfidf_mat(term_document_matrix)
-        
+
     return term_document_matrix, np.array(sorted_vocab)
 
 
