@@ -17,7 +17,7 @@ class LSI_IR:
     but for now this class will always read the data, preprocess it, create
     the term document matrix, compute the svd and answer the query in this space.
     """
-    def __init__(self, data_path : str, preprocess_protocol : tuple | None = None, boolean_matrix : bool = False, n_components : int = 100):
+    def __init__(self, data_path : str, preprocess_protocol : tuple | None = None, metric : str = "freq", n_components : int = 100):
         """
             Parameters:
             - data_path (str) : where the collection is stored.
@@ -33,11 +33,11 @@ class LSI_IR:
                                         Example: ['NOUN', 'PROPN', 'ADJ', 'VERB'].
                                         If None, all tokens are kept.
               IF SET TO NONE the default option will be considered.
-            - boolean_matrix (bool) : how to compute the term document matrix.
+            - metric (str) : what metric to use while computing the document matrix.
             - n_components (int) : number of components to consider for the svd.
         """
         self.preprocess_protocol = preprocess_protocol
-        self.boolean_matrix = boolean_matrix
+        self.metric = metric
         self.n_components = n_components
         self.data_path = data_path
 
@@ -48,7 +48,7 @@ class LSI_IR:
         else:
             self.preprocessed_df = preprocess_for_lsi(self.parsed_df, *self.preprocess_protocol)
         
-        self.term_document_matrix, self.term_indexes = build_term_documents_mat(self.preprocessed_df, boolean_matrix)
+        self.term_document_matrix, self.term_indexes = build_term_documents_mat(self.preprocessed_df, self.metric)
 
         self.latent_semantic_indexing = LSI(self.term_document_matrix, n_components=self.n_components, terms_indexes=self.term_indexes)
 
@@ -69,12 +69,9 @@ class LSI_IR:
             preprocess_protocol = list(self.preprocess_protocol)[1:] # we do not need the first part of this
             preprocessed_query = preprocess_query_for_lsi(query, *preprocess_protocol)
 
-        query_vector = term_query_vector(preprocessed_query, self.term_indexes, self.boolean_matrix)
+        query_vector = term_query_vector(preprocessed_query, self.term_indexes, "freq")
 
         query_lsi = np.linalg.inv(np.diag(self.latent_semantic_indexing.concept_strength)) @ self.latent_semantic_indexing.term_concept_similarity.T @ (query_vector.reshape(-1, 1))
-
-        print(query_lsi.shape)
-        print(self.latent_semantic_indexing.document_concept_similarity.shape)
         
         similarities = cosine_similarity(query_lsi.T, self.latent_semantic_indexing.document_concept_similarity)
 
