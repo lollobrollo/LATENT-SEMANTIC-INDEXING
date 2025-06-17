@@ -38,13 +38,13 @@ def create_vocab(docs: pd.DataFrame) -> list:
     return list(set(vocab)), term_frequencies
 
 
-def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> np.array:
+def build_term_documents_mat(df: pd.DataFrame, metric: str = "freq") -> np.array:
     """
     Builds a term-document matrix from preprocessed text in a DataFrame.
 
     Parameters:
     - df (pd.DataFrame): DataFrame containing a 'clean_text' column with preprocessed text (space-separated tokens).
-    - boolean (bool): True for binary term presence instead of frequency.
+    - metric (string): one between {"bool", "freq", "tf-idf"}
 
     Returns:
     - np.array: A 2D NumPy array where rows are terms and columns are documents.
@@ -63,10 +63,13 @@ def build_term_documents_mat(df: pd.DataFrame, boolean_matrix: bool = False) -> 
     for doc_idx, tf_doc in enumerate(term_freq):
         for term, freq in tf_doc.items():
 
-            if boolean_matrix: freq = 1
+            if metric == "bool": freq = 1
 
             term_document_matrix[indexed_vocab[term], doc_idx] = freq
-
+    
+    if metric == "tf-idf":
+        term_document_matrix = build_tfidf_mat(term_document_matrix)
+        
     return term_document_matrix, np.array(sorted_vocab)
 
 
@@ -99,17 +102,18 @@ def compute_idf(td_matrix: np.array, document_freq: np.array) -> np.array:
     return np.log10(n_docs / (document_freq + 1))
 
 
-def build_tfidf_mat(td_matrix: np.array, idf_array: np.array) -> np.array:
+def build_tfidf_mat(td_matrix: np.array) -> np.array:
     """
     Builds the TF-IDF matrix by combining term frequencies with IDF scores.
 
     Parameters:
     - td_matrix (np.array): term-document matrix with term frequencies.
-    - idf_array (np.array): precomputed IDF values, one per term.
 
     Returns:
     - np.array: TF-IDF matrix with same shape as td_matrix.
     """
+    doc_freq = compute_doc_freq(td_matrix)
+    idf_array = compute_idf(td_matrix, doc_freq)
 
     tfidf_matrix = td_matrix.copy()
     for i in range(td_matrix.shape[0]):
