@@ -121,6 +121,6 @@ if __name__ == '__main__':
     if os.path.exists(f"{path}.pkl"):
         fr = load(path)
     else:
-        fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, boolean_matrix=None, n_components=100)
+        fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, metric="tf-idf", n_components=100)
         fr.save(path)
     fr.retrieve("buckling of circular cones under axial")
