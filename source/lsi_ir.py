@@ -52,6 +52,8 @@ class LSI_IR:
 
         self.latent_semantic_indexing = LSI(self.term_document_matrix, n_components=self.n_components, terms_indexes=self.term_indexes)
 
+        self.term_tf_idf = compute_idf(self.term_document_matrix, compute_doc_freq(self.term_document_matrix))
+
     def retrieve(self, query : str, n_doc : int = 5):
         """
             Retrieve the n_doc most relevant documents from the collection linked to the query.
@@ -70,6 +72,11 @@ class LSI_IR:
             preprocessed_query = preprocess_query_for_lsi(query, *preprocess_protocol)
 
         query_vector = term_query_vector(preprocessed_query, self.term_indexes, "freq")
+
+        if self.metric == "tf-idf":
+            print(query_vector.shape)
+            print(self.term_tf_idf.shape)
+            query_vector = query_vector*self.term_tf_idf
 
         query_lsi = np.linalg.inv(np.diag(self.latent_semantic_indexing.concept_strength)) @ self.latent_semantic_indexing.term_concept_similarity.T @ (query_vector.reshape(-1, 1))
         
@@ -114,6 +121,6 @@ if __name__ == '__main__':
     if os.path.exists(f"{path}.pkl"):
         fr = load(path)
     else:
-        fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, boolean_matrix=None, n_components=100)
+        fr = LSI_IR(data_path='data\\cran\\cran.all.1400', preprocess_protocol=None, metric="tf-idf", n_components=100)
         fr.save(path)
     fr.retrieve("buckling of circular cones under axial")

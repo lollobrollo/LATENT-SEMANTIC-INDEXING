@@ -82,7 +82,7 @@ def term_query_vector(preprocessed_query : str, term_indexes : np.ndarray, metri
     Parameters:
     - preprocessed_query (str) : the query preprocessed as needed
     - term_indexes (np.ndarray) : the ordered set of all terms in the collection where we are retrieving
-    - metric (str) : the metric used to compute the vector [freq, bool]
+    - metric (str) : the metric used to compute the vector [freq, bool]. The tf-idf is handled by the LSI IR, not by this function
 
     """
     query_vector = np.zeros(term_indexes.shape)
